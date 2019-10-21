@@ -1,12 +1,15 @@
 # This is used to generate istio.yaml for a stress/load test cluster.
 
 global:
+  hub: gcr.io/istio-testing
+  tag: 1.5-alpha.deccffd2c961a4cc1825928d9efd56cbf1f562af
   imagePullPolicy: Always
   meshExpansion:
     enabled: true
     useILB: true
 
   proxy:
+    tracer: "stackdriver"
     enableCoreDump: true
     concurrency: 2
     accessLogFile: ""
@@ -21,6 +24,10 @@ global:
       enabled: false
       host: accesslog-grpc.istio-system.svc.cluster.local
       port: 18090 
+  
+  mixerCheckServer: ""
+  mixerReportServer: ""
+  disablePolicyChecks: true
 
   mtls:
     # Default setting for service-to-service mtls. Can be set explicitly using
@@ -99,42 +106,16 @@ sidecarInjectorWebhook:
   enabled: true
 
 grafana:
-  enabled: true
-  datasources:
-    datasources.yaml:
-      apiVersion: 1
-      datasources:
-      - name: Prometheus
-        type: prometheus
-        orgId: 1
-        url: http://istio-prometheus.istio-prometheus:9090
-        access: proxy
-        isDefault: true
-        jsonData:
-          timeInterval: 5s
-        editable: true
+  enabled: false
 
 mixer:
-  resources:
-    requests:
-      cpu: 3800m
-      memory: 4G
-    limits:
-      cpu: 5800m
-      memory: 5G
   telemetry:
-    enabled: true
-    autoscaleEnabled: true
-    autoscaleMin: 1
-    autoscaleMax: 15
-    cpu:
-      targetAverageUtilization: 80
-    sessionAffinityEnabled: false
+    enabled: false
+  policy:
+    enabled: false
 
 tracing:
-  enabled: true
-  jaeger:
-    enabled: true
+  enabled: false
 
 prometheus:
   enabled: false
@@ -144,13 +125,6 @@ kiali:
 
 certmanager:
   enabled: false
-  email: mjog@google.com
-  commonName: ingress.v10.istio.webinf.info
-  certificates:
-    - "ingress.v10.istio.webinf.info"
-  #commonName: fortiotls.v10.istio.webinf.info
-  #certificates:
-  #  - "fortiotls.v10.istio.webinf.info"
 
 nodeagent:
   enabled: true
